@@ -3,5 +3,6 @@ node_modules
 dist
 dist-sea
 dist-standalone
+.tmp
 sea-prep-*.blob
 src-sea-temp

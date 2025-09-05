@@ -25,8 +25,8 @@
   "scripts": {
     "build": "tsup",
     "build:watch": "tsup --watch",
-    "build:sea": "node build-all.mjs",
-    "build:standalone": "./build-standalone.sh",
+    "build:sea": "node scripts/build-all.mjs",
+    "build:standalone": "./scripts/build-standalone.sh",
     "build:all": "npm run build && npm run build:sea && npm run build:standalone",
     "check": "prettier --check . && tsc",
     "lint-fix": "prettier --check . --write",
