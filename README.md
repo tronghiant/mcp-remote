@@ -4,17 +4,39 @@ Connect an MCP Client that only supports local (stdio) servers to a Remote MCP S
 
 **Note: this is a working proof-of-concept** but should be considered **experimental**.
 
-## Why is this necessary?
+## 🚀 Standalone Executables
 
-So far, the majority of MCP servers in the wild are installed locally, using the stdio transport. This has some benefits: both the client and the server can implicitly trust each other as the user has granted them both permission to run. Adding secrets like API keys can be done using environment variables and never leave your machine. And building on `npx` and `uvx` has allowed users to avoid explicit install steps, too.
+mcp-remote now supports **standalone executables** that work without requiring Node.js to be installed! Built using Node.js v22 Single Executable Applications (SEA).
 
-But there's a reason most software that _could_ be moved to the web _did_ get moved to the web: it's so much easier to find and fix bugs & iterate on new features when you can push updates to all your users with a single deploy.
+### Quick Start - No Node.js Required
 
-With the latest MCP [Authorization specification](https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization), we now have a secure way of sharing our MCP servers with the world _without_ running code on user's laptops. Or at least, you would, if all the popular MCP _clients_ supported it yet. Most are stdio-only, and those that _do_ support HTTP+SSE don't yet support the OAuth flows required.
+```bash
+# Download standalone executable (example - adjust URL for your platform)
+curl -O https://github.com/tronghiant/mcp-remote/releases/latest/download/mcp-remote
+chmod +x mcp-remote
 
-That's where `mcp-remote` comes in. As soon as your chosen MCP client supports remote, authorized servers, you can remove it. Until that time, drop in this one liner and dress for the MCP clients you want!
+# Run directly
+./mcp-remote https://remote.mcp.server/sse
+```
 
-## Usage
+### For MCP Clients
+
+```json
+{
+  "mcpServers": {
+    "remote-example": {
+      "command": "/path/to/mcp-remote",
+      "args": ["https://remote.mcp.server/sse"]
+    }
+  }
+}
+```
+
+📖 **[Full standalone documentation →](STANDALONE.md)**
+
+## Traditional Usage (with Node.js)
+
+For users who prefer the traditional npm/npx approach:
 
 All the most popular MCP clients (Claude Desktop, Cursor & Windsurf) use the following config format:
 
@@ -250,6 +272,16 @@ As of version `0.48.0`, Cursor supports unauthed SSE servers directly. If your M
 ### Windsurf
 
 [Official Docs](https://docs.codeium.com/windsurf/mcp). The configuration file is located at `~/.codeium/windsurf/mcp_config.json`.
+
+## Why is this necessary?
+
+So far, the majority of MCP servers in the wild are installed locally, using the stdio transport. This has some benefits: both the client and the server can implicitly trust each other as the user has granted them both permission to run. Adding secrets like API keys can be done using environment variables and never leave your machine. And building on `npx` and `uvx` has allowed users to avoid explicit install steps, too.
+
+But there's a reason most software that _could_ be moved to the web _did_ get moved to the web: it's so much easier to find and fix bugs & iterate on new features when you can push updates to all your users with a single deploy.
+
+With the latest MCP [Authorization specification](https://modelcontextprotocol.io/specification/2025-03-26/basic/authorization), we now have a secure way of sharing our MCP servers with the world _without_ running code on user's laptops. Or at least, you would, if all the popular MCP _clients_ supported it yet. Most are stdio-only, and those that _do_ support HTTP+SSE don't yet support the OAuth flows required.
+
+That's where `mcp-remote` comes in. As soon as your chosen MCP client supports remote, authorized servers, you can remove it. Until that time, drop in this one liner and dress for the MCP clients you want!
 
 ## Building Remote MCP Servers
 

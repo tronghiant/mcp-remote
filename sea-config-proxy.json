@@ -1,5 +1,5 @@
 {
-  "main": "dist/proxy.js",
+  "main": "dist-sea/proxy.cjs",
   "output": "sea-prep-proxy.blob",
   "disableExperimentalSEAWarning": true,
   "useSnapshot": false,

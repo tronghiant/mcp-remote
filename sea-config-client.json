@@ -1,5 +1,5 @@
 {
-  "main": "dist/client.js",
+  "main": "dist-sea/client.cjs",
   "output": "sea-prep-client.blob",
   "disableExperimentalSEAWarning": true,
   "useSnapshot": false,
