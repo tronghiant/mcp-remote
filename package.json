@@ -26,6 +26,8 @@
     "build": "tsup",
     "build:watch": "tsup --watch",
     "build:exe": "node scripts/build-executables.cjs",
+    "build:release": "node scripts/build-release.cjs",
+    "update-version": "node scripts/update-version.cjs",
     "check": "prettier --check . && tsc",
     "lint-fix": "prettier --check . --write",
     "test:unit": "vitest run",
