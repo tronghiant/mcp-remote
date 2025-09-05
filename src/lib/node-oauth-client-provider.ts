@@ -1,4 +1,5 @@
-import open from 'open'
+// Note: Browser auto-opening removed for SEA compatibility
+// Users will need to manually open the URL
 import { OAuthClientProvider } from '@modelcontextprotocol/sdk/client/auth.js'
 import {
   OAuthClientInformationFull,
@@ -172,13 +173,9 @@ export class NodeOAuthClientProvider implements OAuthClientProvider {
 
     debugLog('Redirecting to authorization URL', authorizationUrl.toString())
 
-    try {
-      await open(sanitizeUrl(authorizationUrl.toString()))
-      log('Browser opened automatically.')
-    } catch (error) {
-      log('Could not open browser automatically. Please copy and paste the URL above into your browser.')
-      debugLog('Failed to open browser', error)
-    }
+    // Always prompt user to open URL manually for better compatibility
+    log('Please copy and paste the URL above into your browser to authorize this client.')
+    debugLog('Authorization URL provided for manual opening', authorizationUrl.toString())
   }
 
   /**

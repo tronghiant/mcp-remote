@@ -7,7 +7,8 @@ import { OAuthError } from '@modelcontextprotocol/sdk/server/auth/errors.js'
 import { OAuthClientInformationFull, OAuthClientInformationFullSchema } from '@modelcontextprotocol/sdk/shared/auth.js'
 import { OAuthCallbackServerOptions, StaticOAuthClientInformationFull, StaticOAuthClientMetadata } from './types'
 import { getConfigDir, getConfigFilePath, readJsonFile } from './mcp-auth-config'
-import express from 'express'
+import http from 'http'
+import { URL } from 'url'
 import net from 'net'
 import crypto from 'crypto'
 import fs from 'fs'
@@ -437,7 +438,6 @@ export async function connectToRemoteServer(
  */
 export function setupOAuthCallbackServerWithLongPoll(options: OAuthCallbackServerOptions) {
   let authCode: string | null = null
-  const app = express()
 
   // Create a promise to track when auth is completed
   let authCompletedResolve: (code: string) => void
@@ -445,74 +445,100 @@ export function setupOAuthCallbackServerWithLongPoll(options: OAuthCallbackServe
     authCompletedResolve = resolve
   })
 
-  // Long-polling endpoint
-  app.get('/wait-for-auth', (req, res) => {
-    if (authCode) {
-      // Auth already completed - just return 200 without the actual code
-      // Secondary instances will read tokens from disk
-      log('Auth already completed, returning 200')
-      res.status(200).send('Authentication completed')
+  const server = http.createServer((req, res) => {
+    const url = new URL(req.url || '', `http://localhost:${options.port}`)
+
+    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type')
+
+    if (req.method === 'OPTIONS') {
+      res.writeHead(204)
+      res.end()
       return
     }
 
-    if (req.query.poll === 'false') {
-      log('Client requested no long poll, responding with 202')
-      res.status(202).send('Authentication in progress')
-      return
+    if (req.method === 'GET' && url.pathname === '/wait-for-auth') {
+      // Long-polling endpoint
+      if (authCode) {
+        // Auth already completed - just return 200 without the actual code
+        // Secondary instances will read tokens from disk
+        log('Auth already completed, returning 200')
+        res.writeHead(200, { 'Content-Type': 'text/plain' })
+        res.end('Authentication completed')
+        return
+      }
+
+      if (url.searchParams.get('poll') === 'false') {
+        log('Client requested no long poll, responding with 202')
+        res.writeHead(202, { 'Content-Type': 'text/plain' })
+        res.end('Authentication in progress')
+        return
+      }
+
+      // Long poll - wait for up to 30 seconds
+      const longPollTimeout = setTimeout(() => {
+        log('Long poll timeout reached, responding with 202')
+        if (!res.headersSent) {
+          res.writeHead(202, { 'Content-Type': 'text/plain' })
+          res.end('Authentication in progress')
+        }
+      }, options.authTimeoutMs || 30000)
+
+      // If auth completes while we're waiting, send the response immediately
+      authCompletedPromise
+        .then(() => {
+          clearTimeout(longPollTimeout)
+          if (!res.headersSent) {
+            log('Auth completed during long poll, responding with 200')
+            res.writeHead(200, { 'Content-Type': 'text/plain' })
+            res.end('Authentication completed')
+          }
+        })
+        .catch(() => {
+          clearTimeout(longPollTimeout)
+          if (!res.headersSent) {
+            log('Auth failed during long poll, responding with 500')
+            res.writeHead(500, { 'Content-Type': 'text/plain' })
+            res.end('Authentication failed')
+          }
+        })
+    } else if (req.method === 'GET' && url.pathname === options.path) {
+      // OAuth callback endpoint
+      const code = url.searchParams.get('code')
+      if (!code) {
+        res.writeHead(400, { 'Content-Type': 'text/plain' })
+        res.end('Error: No authorization code received')
+        return
+      }
+
+      authCode = code
+      log('Auth code received, resolving promise')
+      authCompletedResolve(code)
+
+      res.writeHead(200, { 'Content-Type': 'text/html' })
+      res.end(`
+        Authorization successful!
+        You may close this window and return to the CLI.
+        <script>
+          // If this is a non-interactive session (no manual approval step was required) then
+          // this should automatically close the window. If not, this will have no effect and
+          // the user will see the message above.
+          window.close();
+        </script>
+      `)
+
+      // Notify main flow that auth code is available
+      options.events.emit('auth-code-received', code)
+    } else {
+      // 404 for unknown paths
+      res.writeHead(404, { 'Content-Type': 'text/plain' })
+      res.end('Not Found')
     }
-
-    // Long poll - wait for up to 30 seconds
-    const longPollTimeout = setTimeout(() => {
-      log('Long poll timeout reached, responding with 202')
-      res.status(202).send('Authentication in progress')
-    }, options.authTimeoutMs || 30000)
-
-    // If auth completes while we're waiting, send the response immediately
-    authCompletedPromise
-      .then(() => {
-        clearTimeout(longPollTimeout)
-        if (!res.headersSent) {
-          log('Auth completed during long poll, responding with 200')
-          res.status(200).send('Authentication completed')
-        }
-      })
-      .catch(() => {
-        clearTimeout(longPollTimeout)
-        if (!res.headersSent) {
-          log('Auth failed during long poll, responding with 500')
-          res.status(500).send('Authentication failed')
-        }
-      })
   })
 
-  // OAuth callback endpoint
-  app.get(options.path, (req, res) => {
-    const code = req.query.code as string | undefined
-    if (!code) {
-      res.status(400).send('Error: No authorization code received')
-      return
-    }
-
-    authCode = code
-    log('Auth code received, resolving promise')
-    authCompletedResolve(code)
-
-    res.send(`
-      Authorization successful!
-      You may close this window and return to the CLI.
-      <script>
-        // If this is a non-interactive session (no manual approval step was required) then
-        // this should automatically close the window. If not, this will have no effect and
-        // the user will see the message above.
-        window.close();
-      </script>
-    `)
-
-    // Notify main flow that auth code is available
-    options.events.emit('auth-code-received', code)
-  })
-
-  const server = app.listen(options.port, () => {
+  server.listen(options.port, () => {
     log(`OAuth callback server running at http://127.0.0.1:${options.port}`)
   })
 
@@ -533,7 +559,7 @@ export function setupOAuthCallbackServerWithLongPoll(options: OAuthCallbackServe
 }
 
 /**
- * Sets up an Express server to handle OAuth callbacks
+ * Sets up an HTTP server to handle OAuth callbacks
  * @param options The server options
  * @returns An object with the server, authCode, and waitForAuthCode function
  */

@@ -1,3 +1,8 @@
 node_modules
 .mcp-cli
 dist
+dist-sea
+dist-standalone
+.tmp
+sea-prep-*.blob
+src-sea-temp
