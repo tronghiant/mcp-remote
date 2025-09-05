@@ -1,7 +1,7 @@
 import { checkLockfile, createLockfile, deleteLockfile, getConfigFilePath, LockfileData } from './mcp-auth-config'
 import { EventEmitter } from 'events'
 import { Server } from 'http'
-import express from 'express'
+import http from 'http'
 import { AddressInfo } from 'net'
 import { unlinkSync } from 'fs'
 import { log, debugLog, setupOAuthCallbackServerWithLongPoll } from './utils'
@@ -192,7 +192,7 @@ export async function coordinateAuth(
         log('Authentication completed by another instance. Using tokens from disk')
 
         // Setup a dummy server - the client will use tokens directly from disk
-        const dummyServer = express().listen(0) // Listen on any available port
+        const dummyServer = http.createServer().listen(0) // Listen on any available port
         const dummyPort = (dummyServer.address() as AddressInfo).port
         debugLog('Started dummy server', { port: dummyPort })
 

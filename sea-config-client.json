@@ -1,0 +1,7 @@
+{
+  "main": "dist/client.js",
+  "output": "sea-prep-client.blob",
+  "disableExperimentalSEAWarning": true,
+  "useSnapshot": false,
+  "useCodeCache": true
+}
