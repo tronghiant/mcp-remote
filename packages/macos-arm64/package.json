@@ -1,0 +1,23 @@
+{
+  "name": "@mcp-remote/macos-arm64",
+  "version": "0.1.29",
+  "description": "MCP Remote proxy executable for macOS ARM64",
+  "keywords": [
+    "mcp",
+    "macos",
+    "arm64",
+    "executable"
+  ],
+  "license": "MIT",
+  "repository": "https://github.com/tronghiant/mcp-remote",
+  "os": ["darwin"],
+  "cpu": ["arm64"],
+  "bin": {
+    "mcp-remote": "mcp-remote",
+    "mcp-remote-client": "mcp-remote-client"
+  },
+  "files": [
+    "mcp-remote",
+    "mcp-remote-client"
+  ]
+}

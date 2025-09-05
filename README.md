@@ -32,6 +32,43 @@ All the most popular MCP clients (Claude Desktop, Cursor & Windsurf) use the fol
 }
 ```
 
+## Standalone Executables
+
+For users who prefer not to use Node.js or want a more reliable installation method, `@mcp-remote/exe` provides platform-specific standalone executables:
+
+```bash
+npm install -g @mcp-remote/exe
+```
+
+This will install self-contained executables that don't require Node.js to be installed on the system. The package automatically detects your platform and installs the correct binary:
+
+- Linux x64
+- macOS x64 (Intel)
+- macOS ARM64 (Apple Silicon)
+- Windows x64
+
+After installation, you can use the executables directly in your MCP client configuration:
+
+```json
+{
+  "mcpServers": {
+    "remote-example": {
+      "command": "mcp-remote",
+      "args": [
+        "https://remote.mcp.server/sse"
+      ]
+    }
+  }
+}
+```
+
+Or test them directly from the command line:
+
+```bash
+mcp-remote https://remote.mcp.server/sse
+mcp-remote-client https://remote.mcp.server/sse
+```
+
 ### Custom Headers
 
 To bypass authentication, or to emit custom headers on all requests to your remote server, pass `--header` CLI arguments:

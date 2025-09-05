@@ -1,0 +1,23 @@
+{
+  "name": "@mcp-remote/linux-x64",
+  "version": "0.1.29",
+  "description": "MCP Remote proxy executable for Linux x64",
+  "keywords": [
+    "mcp",
+    "linux",
+    "x64",
+    "executable"
+  ],
+  "license": "MIT",
+  "repository": "https://github.com/tronghiant/mcp-remote",
+  "os": ["linux"],
+  "cpu": ["x64"],
+  "bin": {
+    "mcp-remote": "mcp-remote",
+    "mcp-remote-client": "mcp-remote-client"
+  },
+  "files": [
+    "mcp-remote",
+    "mcp-remote-client"
+  ]
+}
