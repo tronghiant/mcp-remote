@@ -25,6 +25,7 @@
   "scripts": {
     "build": "tsup",
     "build:watch": "tsup --watch",
+    "build:exe": "node scripts/build-executables.cjs",
     "check": "prettier --check . && tsc",
     "lint-fix": "prettier --check . --write",
     "test:unit": "vitest run",
@@ -40,6 +41,7 @@
     "@modelcontextprotocol/sdk": "^1.17.3",
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.10",
+    "pkg": "^5.8.1",
     "prettier": "^3.5.3",
     "tsup": "^8.4.0",
     "tsx": "^4.19.3",
@@ -52,12 +54,17 @@
       "src/proxy.ts"
     ],
     "format": [
-      "esm"
+      "cjs"
     ],
     "dts": true,
     "clean": true,
     "outDir": "dist",
-    "external": []
+    "external": [],
+    "noExternal": [
+      "@modelcontextprotocol/sdk"
+    ],
+    "bundle": true,
+    "splitting": false
   },
   "vitest": {
     "environment": "node",

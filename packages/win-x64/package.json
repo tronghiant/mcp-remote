@@ -1,0 +1,23 @@
+{
+  "name": "@mcp-remote/win-x64",
+  "version": "0.1.29",
+  "description": "MCP Remote proxy executable for Windows x64",
+  "keywords": [
+    "mcp",
+    "windows",
+    "x64",
+    "executable"
+  ],
+  "license": "MIT",
+  "repository": "https://github.com/tronghiant/mcp-remote",
+  "os": ["win32"],
+  "cpu": ["x64"],
+  "bin": {
+    "mcp-remote": "mcp-remote.exe",
+    "mcp-remote-client": "mcp-remote-client.exe"
+  },
+  "files": [
+    "mcp-remote.exe",
+    "mcp-remote-client.exe"
+  ]
+}

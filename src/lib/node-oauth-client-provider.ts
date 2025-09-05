@@ -1,4 +1,3 @@
-import open from 'open'
 import { OAuthClientProvider } from '@modelcontextprotocol/sdk/client/auth.js'
 import {
   OAuthClientInformationFull,
@@ -10,7 +9,6 @@ import type { OAuthProviderOptions, StaticOAuthClientMetadata } from './types'
 import { readJsonFile, writeJsonFile, readTextFile, writeTextFile, deleteConfigFile } from './mcp-auth-config'
 import { StaticOAuthClientInformationFull } from './types'
 import { getServerUrlHash, log, debugLog, MCP_REMOTE_VERSION } from './utils'
-import { sanitizeUrl } from 'strict-url-sanitise'
 import { randomUUID } from 'node:crypto'
 
 /**
@@ -173,6 +171,8 @@ export class NodeOAuthClientProvider implements OAuthClientProvider {
     debugLog('Redirecting to authorization URL', authorizationUrl.toString())
 
     try {
+      const { default: open } = await import('open')
+      const { sanitizeUrl } = await import('strict-url-sanitise')
       await open(sanitizeUrl(authorizationUrl.toString()))
       log('Browser opened automatically.')
     } catch (error) {

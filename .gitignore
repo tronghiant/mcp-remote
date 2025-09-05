@@ -1,3 +1,9 @@
 node_modules
 .mcp-cli
 dist
+
+# Executables built by pkg
+packages/*/mcp-remote
+packages/*/mcp-remote-client
+packages/*/mcp-remote.exe
+packages/*/mcp-remote-client.exe
