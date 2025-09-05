@@ -14,7 +14,7 @@ async function build() {
     const utilsContent = fs.readFileSync('src/lib/utils.ts', 'utf-8')
     const modifiedUtilsContent = utilsContent.replace(
       `import { version as MCP_REMOTE_VERSION } from '../../package.json'`,
-      `const MCP_REMOTE_VERSION = "${version}"`
+      `const MCP_REMOTE_VERSION = "${version}"`,
     )
 
     // Create temp directory
@@ -53,7 +53,7 @@ async function build() {
       target: 'node20',
       format: 'cjs',
       minify: false,
-      sourcemap: false
+      sourcemap: false,
       // No longer need to external 'open' since we removed it
     }
 
@@ -61,14 +61,14 @@ async function build() {
     await esbuild.build({
       ...buildOptionsSEA,
       entryPoints: ['src-sea-temp/proxy.ts'],
-      outfile: 'dist-sea/proxy.cjs'
+      outfile: 'dist-sea/proxy.cjs',
     })
 
     // Build client CJS version for SEA
     await esbuild.build({
       ...buildOptionsSEA,
       entryPoints: ['src-sea-temp/client.ts'],
-      outfile: 'dist-sea/client.cjs'
+      outfile: 'dist-sea/client.cjs',
     })
 
     // Clean up temp directory

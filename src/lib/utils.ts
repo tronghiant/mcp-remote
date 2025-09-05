@@ -447,7 +447,7 @@ export function setupOAuthCallbackServerWithLongPoll(options: OAuthCallbackServe
 
   const server = http.createServer((req, res) => {
     const url = new URL(req.url || '', `http://localhost:${options.port}`)
-    
+
     // Set CORS headers
     res.setHeader('Access-Control-Allow-Origin', '*')
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')

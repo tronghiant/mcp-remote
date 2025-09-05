@@ -16,7 +16,7 @@ mcp-remote now supports creating standalone executables using Node.js v22 Single
 npm run build:all
 
 # Or build standalone executables only
-npm run build:sea        # Build SEA-compatible CJS versions  
+npm run build:sea        # Build SEA-compatible CJS versions
 npm run build:standalone # Generate standalone executables
 ```
 
@@ -54,6 +54,7 @@ node dist/proxy.js https://example.remote/server
 For MCP clients like Claude Desktop, you can use either method:
 
 #### Traditional (requires Node.js)
+
 ```json
 {
   "mcpServers": {
@@ -66,6 +67,7 @@ For MCP clients like Claude Desktop, you can use either method:
 ```
 
 #### Standalone (no Node.js required)
+
 ```json
 {
   "mcpServers": {
@@ -100,6 +102,7 @@ To support SEA, several changes were made:
 ### OAuth Flow Changes
 
 In standalone mode:
+
 - ✅ OAuth authentication works normally
 - ❌ Browser auto-opening is disabled (shows URL to copy/paste instead)
 - ✅ All other functionality remains the same
@@ -138,7 +141,7 @@ npx mcp-remote https://example.remote/server
 Standalone executables are platform-specific and must be built on the target platform:
 
 - ✅ Linux x64
-- ✅ macOS (Intel/Apple Silicon)  
+- ✅ macOS (Intel/Apple Silicon)
 - ✅ Windows x64
 
 For cross-platform distribution, build on each target platform separately.

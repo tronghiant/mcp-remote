@@ -25,12 +25,12 @@ const buildOptions = {
     'assert',
     'net',
     'tls',
-    'zlib'
+    'zlib',
   ],
   define: {
     // Define process.env for bundling
-    'process.env.NODE_ENV': '"production"'
-  }
+    'process.env.NODE_ENV': '"production"',
+  },
 }
 
 async function build() {
@@ -39,14 +39,14 @@ async function build() {
     await esbuild.build({
       ...buildOptions,
       entryPoints: ['src/proxy.ts'],
-      outfile: 'dist-sea/proxy.js'
+      outfile: 'dist-sea/proxy.js',
     })
 
-    // Build client  
+    // Build client
     await esbuild.build({
       ...buildOptions,
       entryPoints: ['src/client.ts'],
-      outfile: 'dist-sea/client.js'
+      outfile: 'dist-sea/client.js',
     })
 
     console.log('Build completed successfully')

@@ -45,7 +45,4 @@ const createConfig = (entry, outputFilename) => ({
   },
 })
 
-export default [
-  createConfig('./src/proxy.ts', 'proxy.js'),
-  createConfig('./src/client.ts', 'client.js'),
-]
+export default [createConfig('./src/proxy.ts', 'proxy.js'), createConfig('./src/client.ts', 'client.js')]
